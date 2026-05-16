@@ -1,6 +1,6 @@
 package com.fotik.website_for_lesson_schedule.controller;
 
-import com.fotik.website_for_lesson_schedule.repository.StudentGroup;
+import com.fotik.website_for_lesson_schedule.entity.StudentGroup;
 import com.fotik.website_for_lesson_schedule.service.GroupService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

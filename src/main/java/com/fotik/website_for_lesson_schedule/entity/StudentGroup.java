@@ -1,4 +1,4 @@
-package com.fotik.website_for_lesson_schedule.repository;
+package com.fotik.website_for_lesson_schedule.entity;
 
 import jakarta.persistence.*;
 import java.util.List;

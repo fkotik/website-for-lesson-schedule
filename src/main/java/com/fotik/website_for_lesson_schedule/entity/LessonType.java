@@ -1,4 +1,4 @@
-package com.fotik.website_for_lesson_schedule.repository;
+package com.fotik.website_for_lesson_schedule.entity;
 
 public enum LessonType {
     LECTURE("lecture"),
