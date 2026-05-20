@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Группы</title>
+    <title>Главная</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -52,35 +52,12 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="card">
-                        <div class="card-header">Учебные группы</div>
+                        <div class="card-header">Админ панель</div>
 
                         <div class="card-body">
-
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Название группы</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="group : ${groups}">
-                                    <th scope="row" th:text="${group.groupId}"></th>
-                                    <td class="d-flex" style="align-items: center">
-                                        <span th:text="${group.groupName}">Название группы</span>
-                                        (Курс: <span th:text="${group.courseYear}">1</span>)
-
-                                        <button type="button" class="btn btn-primary"
-                                                th:onclick="|window.location.href='/group/${group.groupId}'|"
-                                                style="margin-left: auto;">Перейти
-                                        </button>
-
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-
-
+                            <a th:href="@{/students}" class="btn btn-primary">
+                                Студенты
+                            </a>
                         </div>
                     </div>
                 </div>
