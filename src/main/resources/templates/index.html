@@ -33,15 +33,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">По группам</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/teachers">По преподавателям</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/classrooms">Занятость аудиторий</a>
-                    </li>
+
                 </ul>
 
                 <!-- Right Side Of Navbar -->
@@ -58,24 +50,35 @@
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="card">
-                        <div class="card-header">Dashboard</div>
+                        <div class="card-header">Учебные группы</div>
 
                         <div class="card-body">
-                            <h1>Учебные группы</h1>
 
-                            <!-- Проверяем, не пустой ли список -->
-                            <div th:if="${groups.empty}">
-                                <p>Групп пока нет в базе данных.</p>
-                            </div>
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Название группы</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="group : ${groups}">
+                                    <th scope="row" th:text="${group.groupId}"></th>
+                                    <td class="d-flex" style="align-items: center">
+                                        <span th:text="${group.groupName}">Название группы</span>
+                                        (Курс: <span th:text="${group.courseYear}">1</span>)
 
-                            <!-- Выводим список, если он есть -->
-                            <ul th:unless="${groups.empty}">
-                                <!-- Цикл foreach: для каждой 'group' из массива '${groups}' -->
-                                <li th:each="group : ${groups}">
-                                    <span th:text="${group.groupName}">Название группы</span>
-                                    (Курс: <span th:text="${group.courseYear}">1</span>)
-                                </li>
-                            </ul>
+                                        <button type="button" class="btn btn-primary"
+                                                th:onclick="|window.location.href='/group/${group.groupId}'|"
+                                                style="margin-left: auto;">Перейти
+                                        </button>
+
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+
                         </div>
                     </div>
                 </div>

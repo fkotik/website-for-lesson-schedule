@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="'Группа ' + ${group.groupName}">Группа</title>
+
+    <!-- Подключение Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Подключение Bootstrap Icons (для красивых иконок) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        /* Небольшое улучшение для карточек, чтобы они были одинаковой высоты в ряду */
+        .card { height: 100%; }
+        body { background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="py-4">
+
+<div class="container">
+
+    <!-- Кнопка назад -->
+    <div class="mb-3">
+        <a th:href="@{/}" class="text-decoration-none text-secondary">
+            <i class="bi bi-arrow-left"></i> Вернуться к списку групп
+        </a>
+    </div>
+
+    <!-- Заголовок и кнопка расписания -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center border-bottom pb-3 mb-4">
+        <h1 class="mb-3 mb-md-0 text-dark">
+            <i class="bi bi-people-fill text-primary"></i>
+            Группа: <span th:text="${group.groupName}"></span>
+        </h1>
+
+        <a th:href="@{/schedule/{id}(id=${group.groupId})}" class="btn btn-success btn-lg shadow-sm">
+            Перейти к расписанию
+        </a>
+    </div>
+
+    <!-- ВЕРХНИЙ БЛОК: 3 карточки в один ряд (на ПК) -->
+    <div class="row g-4 mb-4">
+
+        <!-- Общая информация -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-bg-primary fw-bold">
+                    Общая информация
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5 text-muted">ID группы:</dt>
+                        <dd class="col-sm-7 fw-bold" th:text="${group.groupId}"></dd>
+
+                        <dt class="col-sm-5 text-muted">Название:</dt>
+                        <dd class="col-sm-7 fw-bold" th:text="${group.groupName}"></dd>
+
+                        <dt class="col-sm-5 text-muted">Курс:</dt>
+                        <dd class="col-sm-7 fw-bold" th:text="${group.courseYear}"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Специальность -->
+        <div class="col-md-6 col-lg-4" th:if="${group.specialization != null}">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-bg-info text-white fw-bold">
+                    Специальность
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-12 text-muted mb-1">Название:</dt>
+                        <dd class="col-12 fw-bold" th:text="${group.specialization.specializationName}"></dd>
+
+                        <dt class="col-12 text-muted mb-1">Код специальности:</dt>
+                        <dd class="col-12 fw-bold">
+                            <span class="badge bg-secondary" th:text="${group.specialization.specializationCode}"></span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Факультет -->
+        <div class="col-md-12 col-lg-4" th:if="${group.specialization?.faculty != null}">
+            <div class="card shadow-sm border-0">
+                <div class="card-header text-bg-secondary fw-bold">
+                    Факультет
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 col-lg-12 text-muted mb-1">Название:</dt>
+                        <dd class="col-sm-8 col-lg-12 fw-bold" th:text="${group.specialization.faculty.facultyName}"></dd>
+
+                        <dt class="col-sm-4 col-lg-12 text-muted mb-1">Декан:</dt>
+                        <dd class="col-sm-8 col-lg-12 fw-bold" th:text="${group.specialization.faculty.deanName}"></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ТАБЛИЦА: Кафедры -->
+    <div class="card shadow-sm border-0 mb-4" th:if="${group.specialization?.faculty?.departments != null}">
+        <div class="card-header bg-white border-bottom fw-bold text-dark fs-5">
+            Кафедры факультета
+        </div>
+        <div class="card-body p-0">
+
+            <div class="table-responsive" th:if="${!#lists.isEmpty(group.specialization.faculty.departments)}">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID</th>
+                        <th>Название кафедры</th>
+                        <th>Заведующий</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="dept : ${group.specialization.faculty.departments}">
+                        <td class="ps-4" th:text="${dept.departmentId}"></td>
+                        <td class="fw-medium" th:text="${dept.departmentName}"></td>
+                        <td>
+                                <span th:if="${dept.headTeacher != null}"
+                                      th:text="${dept.headTeacher.lastName + ' ' + dept.headTeacher.firstName}">
+                                </span>
+                            <span th:if="${dept.headTeacher == null}" class="text-muted fst-italic">Не назначен</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${#lists.isEmpty(group.specialization.faculty.departments)}" class="alert alert-light m-3 text-center text-muted">
+                Кафедры не найдены
+            </div>
+        </div>
+    </div>
+
+    <!-- ТАБЛИЦА: Студенты -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header text-bg-dark d-flex justify-content-between align-items-center fs-5">
+            <div>Студенты группы</div>
+            <span class="badge text-bg-light rounded-pill" th:text="${#lists.size(group.students)} + ' чел.'"></span>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive" th:if="${!#lists.isEmpty(group.students)}">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>ФИО</th>
+                        <th>Дата рождения</th>
+                        <th>Контактные данные</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="student, iterStat : ${group.students}">
+                        <td class="ps-4 text-muted" th:text="${iterStat.count}"></td>
+                        <td>
+                            <div class="fw-bold" th:text="${student.lastName + ' ' + student.firstName}"></div>
+                            <div class="text-muted small" th:text="${student.middleName} ?: ''"></div>
+                        </td>
+                        <td>
+                            <span th:text="${#temporals.format(student.dateOfBirth, 'dd.MM.yyyy')}"></span>
+                        </td>
+                        <td>
+                            <div>Email: <span th:text="${student.email}"></span></div>
+                            <div th:if="${student.phone != null}">Телефон: <span th:text="${student.phone}"></span></div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${#lists.isEmpty(group.students)}" class="alert alert-warning m-3 text-center">
+                <i class="bi bi-exclamation-triangle"></i> В этой группе пока нет зарегистрированных студентов.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Подключение Bootstrap JS (необязательно, но нужно для некоторых интерактивных элементов) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

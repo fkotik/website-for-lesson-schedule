@@ -19,4 +19,8 @@ public class GroupService {
         return studentGroupRepository.findAll();
     }
 
+    public StudentGroup getGroupById(Integer id) {
+        return studentGroupRepository.findByIdWithDetails(id)
+                .orElseThrow(() -> new RuntimeException("Группа с ID " + id + " не найдена"));
+    }
 }

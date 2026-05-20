@@ -1,9 +1,9 @@
 package com.fotik.website_for_lesson_schedule.entity;
 
 public enum LessonType {
-    LECTURE("lecture"),
-    SEMINAR("seminar"),
-    LAB("lab");
+    lecture("lecture"),
+    seminar("seminar"),
+    lab("lab");
 
     private final String value;
 

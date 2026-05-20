@@ -2,6 +2,7 @@ package com.fotik.website_for_lesson_schedule.entity;
 
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "faculty")
@@ -19,7 +20,7 @@ public class Faculty {
     private String deanName;
 
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Department> departments;
+    private Set<Department> departments;
 
     @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Specialization> specializations;
@@ -58,11 +59,11 @@ public class Faculty {
         this.deanName = deanName;
     }
 
-    public List<Department> getDepartments() {
+    public Set<Department> getDepartments() {
         return departments;
     }
 
-    public void setDepartments(List<Department> departments) {
+    public void setDepartments(Set<Department> departments) {
         this.departments = departments;
     }
 
