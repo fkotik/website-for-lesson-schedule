@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кафедры</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container py-4">
+
+    <!-- Верхняя панель -->
+    <div class="mb-4">
+        <a th:href="@{/admin}" class="btn btn-outline-primary mb-3">
+            Админ панель
+        </a>
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <h1 class="mb-0">Кафедры</h1>
+            <button type="button"
+                    class="btn btn-primary btn-lg"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addDepartmentModal">
+                Добавить кафедру
+            </button>
+        </div>
+    </div>
+
+    <!-- Сообщение об успехе -->
+    <div th:if="${successMessage}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Сообщение об ошибке -->
+    <div th:if="${errorMessage}"
+         class="alert alert-danger alert-dismissible fade show"
+         role="alert">
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Строка поиска -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form th:action="@{/departments}" method="get">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Поиск по названию</label>
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Введите название кафедры..."
+                               th:value="${search}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Найти
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a th:href="@{/departments}" class="btn btn-outline-secondary w-100">
+                            Сбросить
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Таблица кафедр -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <span>Список кафедр</span>
+            <span class="badge bg-light text-dark fs-6">
+                Всего:
+                <span th:text="${#lists.size(departments)}">0</span>
+            </span>
+        </div>
+        <div class="card-body p-0">
+            <!-- Таблица -->
+            <div class="table-responsive" th:if="${!#lists.isEmpty(departments)}">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Название кафедры</th>
+                        <th>Факультет</th>
+                        <th>Зав. кафедрой</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="dept : ${departments}">
+                        <td th:text="${dept.departmentId}">1</td>
+                        <td class="fw-bold" th:text="${dept.departmentName}">Кафедра ИТ</td>
+
+                        <!-- Вывод названия факультета по связи ManyToOne -->
+                        <td th:text="${dept.faculty != null ? dept.faculty.facultyName : 'Нет'}">ФИТ</td>
+
+                        <!-- ИСПРАВЛЕНО: Вывод зав. кафедрой (Фамилия + Имя) -->
+                        <td th:text="${dept.headTeacher != null ? dept.headTeacher.lastName + ' ' + dept.headTeacher.firstName : 'Не назначен'}">Иванов И.И.</td>
+
+                        <td class="text-end">
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-warning me-1"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#editDepartmentModal' + ${dept.departmentId}">
+                                Редактировать
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#deleteDepartmentModal' + ${dept.departmentId}">
+                                Удалить
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Если кафедр нет -->
+            <div th:if="${#lists.isEmpty(departments)}" class="text-center py-5">
+                <h4 class="text-muted">Кафедры не найдены</h4>
+                <p class="text-muted" th:if="${search != null and !search.isBlank()}">
+                    По запросу "<strong th:text="${search}"></strong>" ничего не найдено.
+                </p>
+                <p class="text-muted" th:if="${search == null or search.isBlank()}">
+                    Добавьте первую кафедру с помощью кнопки выше.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- МОДАЛЬНОЕ ОКНО ДОБАВЛЕНИЯ -->
+<!-- ======================================== -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form th:action="@{/departments}"
+              method="post"
+              th:object="${newDepartment}"
+              class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Добавить кафедру</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Название кафедры</label>
+                        <input type="text"
+                               class="form-control"
+                               th:field="*{departmentName}"
+                               placeholder="Введите название кафедры"
+                               maxlength="200"
+                               required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Факультет</label>
+                        <select class="form-select" th:field="*{faculty}" required>
+                            <option value="" disabled selected>Выберите факультет...</option>
+                            <option th:each="fac : ${faculties}"
+                                    th:value="${fac.facultyId}"
+                                    th:text="${fac.facultyName}"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Заведующий кафедрой</label>
+                        <select class="form-select" th:field="*{headTeacher}">
+                            <option value="">-- Не назначен --</option>
+                            <!-- ИСПРАВЛЕНО: (Фамилия + Имя) -->
+                            <option th:each="tch : ${teachers}"
+                                    th:value="${tch.teacherId}"
+                                    th:text="${tch.lastName + ' ' + tch.firstName}"></option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- МОДАЛЬНЫЕ ОКНА РЕДАКТИРОВАНИЯ -->
+<!-- ======================================== -->
+<div th:each="dept : ${departments}"
+     class="modal fade"
+     th:id="'editDepartmentModal' + ${dept.departmentId}"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <form th:action="@{/departments/{id}/update(id=${dept.departmentId})}"
+              method="post"
+              class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">Редактировать кафедру</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Название кафедры</label>
+                        <input type="text"
+                               class="form-control"
+                               name="departmentName"
+                               th:value="${dept.departmentName}"
+                               maxlength="200"
+                               required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Факультет</label>
+                        <select class="form-select" name="faculty" required>
+                            <option value="" disabled>Выберите факультет...</option>
+                            <option th:each="fac : ${faculties}"
+                                    th:value="${fac.facultyId}"
+                                    th:text="${fac.facultyName}"
+                                    th:selected="${dept.faculty != null and dept.faculty.facultyId == fac.facultyId}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Заведующий кафедрой</label>
+                        <select class="form-select" name="headTeacher">
+                            <option value="">-- Не назначен --</option>
+                            <!-- ИСПРАВЛЕНО: (Фамилия + Имя) -->
+                            <option th:each="tch : ${teachers}"
+                                    th:value="${tch.teacherId}"
+                                    th:text="${tch.lastName + ' ' + tch.firstName}"
+                                    th:selected="${dept.headTeacher != null and dept.headTeacher.teacherId == tch.teacherId}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-warning">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- МОДАЛЬНЫЕ ОКНА УДАЛЕНИЯ -->
+<!-- ======================================== -->
+<div th:each="dept : ${departments}"
+     class="modal fade"
+     th:id="'deleteDepartmentModal' + ${dept.departmentId}"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <form th:action="@{/departments/{id}/delete(id=${dept.departmentId})}"
+              method="post"
+              class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Удалить кафедру</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы действительно хотите удалить эту кафедру?</p>
+                <p class="fw-bold" th:text="${dept.departmentName}">Название кафедры</p>
+
+                <div class="alert alert-warning">
+                    <strong>Внимание!</strong> Из-за настроек базы данных вместе с кафедрой будут удалены все привязанные к ней преподаватели и дисциплины (CascadeType.ALL).
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

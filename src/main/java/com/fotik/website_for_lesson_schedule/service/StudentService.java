@@ -2,7 +2,7 @@ package com.fotik.website_for_lesson_schedule.service;
 
 import com.fotik.website_for_lesson_schedule.entity.Student;
 import com.fotik.website_for_lesson_schedule.entity.StudentGroup;
-import com.fotik.website_for_lesson_schedule.repository.StudentGroupRepository;
+import com.fotik.website_for_lesson_schedule.repository.GroupRepository;
 import com.fotik.website_for_lesson_schedule.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,10 +13,10 @@ import java.util.List;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-    private final StudentGroupRepository studentGroupRepository;
+    private final GroupRepository studentGroupRepository;
 
     public StudentService(StudentRepository studentRepository,
-                          StudentGroupRepository studentGroupRepository) {
+                          GroupRepository studentGroupRepository) {
         this.studentRepository = studentRepository;
         this.studentGroupRepository = studentGroupRepository;
     }
